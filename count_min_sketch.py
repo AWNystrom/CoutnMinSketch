@@ -25,8 +25,6 @@ class CountMinSketch(object):
 		return array([int(f(s+str(i)).hexdigest(), 16) % w for i in xrange(self.d)])
 		
 	def update(self, a, val=1):
-		if val < 1:
-			return
 		h = self.get_columns(a)
 		self.count[self.rows, h] += val
 	
