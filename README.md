@@ -5,9 +5,11 @@ The Count–min sketch (or CM sketch) is a probabilistic sub-linear space stream
 Count–min sketches are somewhat similar to Bloom filters; the main distinction is that Bloom filters represent sets, while CM sketches represent multisets and frequency tables. Spectral Bloom filters with multi-set policy, are conceptually isomorphic to the Count-Min Sketch.
 
 ##Usage
+```python
 >>> cms = CountMinSketch(200, 500)
 >>> cms['foo']
 0
 >>> cms['foo'] += 5
 >>> cms['foo']
 5
+```
