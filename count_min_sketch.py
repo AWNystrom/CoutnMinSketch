@@ -13,8 +13,8 @@ class CountMinSketch(object):
 		w : the number of columns in the count matrix
 		d : the number of rows in the count matrix
 		f : the hash function class to be used. Must have the method hexdigest
-		epsilon : the error bound.
-		delta : the probability the error bound will hold.
+		epsilon : the error factor.
+		delta : the probability the error factor will hold.
 		For the full paper on the algorithm, see the paper
 		"An improved data stream summary: the count-min sketch and its -
 		applications" by Cormode and Muthukrishnan, 2003.
