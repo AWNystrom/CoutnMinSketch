@@ -1,17 +1,28 @@
 from numpy import zeros, int32, arange, array
 from hashlib import md5
+from math import log, e, ceil
 
 class CountMinSketch(object):
-	def __init__(self, w, d, f=md5):
+	def __init__(self, w=None, d=None, delta=None, epsilon=None, f=md5):
 		"""
-		w: the number of columns in the count matrix
-		d: the number of rows in the count matrix
-		f: the hash function class to be used. Must have the method hexdigest
+		CountMinSketch is an implementation of the count min sketch 
+		algorithm that probabilistically counts string frequencies.
 		
+		Parameters
+		----------
+		w : the number of columns in the count matrix
+		d : the number of rows in the count matrix
+		f : the hash function class to be used. Must have the method hexdigest
+		epsilon : the error bound.
+		delta : the probability the error bound will hold.
 		For the full paper on the algorithm, see the paper
 		"An improved data stream summary: the count-min sketch and its -
 		applications" by Cormode and Muthukrishnan, 2003.
 		"""
+		
+		if epsilon is not None and delta is not None:
+			w = ceil(e/epsilon)
+			d = ceil(log(1./delta))
 		self.w = w
 		self.d = d
 		self.f = f
