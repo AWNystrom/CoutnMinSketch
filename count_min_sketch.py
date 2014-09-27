@@ -51,7 +51,7 @@ class CountMinSketch(object):
 		return array([f(str(i)+s) % w for i in xrange(self.d)])
 		
 	def update(self, a, val=1):
-		h = self.get_columns(a)
+		h, in_cache = self.cache.lookup(a)
 		self.count[self.rows, h] += val
 	
 	def query(self, a):
