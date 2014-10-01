@@ -12,16 +12,12 @@ class CountMinSketch(object):
 		----------
 		w : the number of columns in the count matrix
 		d : the number of rows in the count matrix
-		epsilon : error factor
-		delta : the probability of error
+
 		For the full paper on the algorithm, see the paper
 		"An improved data stream summary: the count-min sketch and its -
 		applications" by Cormode and Muthukrishnan, 2003.
 		"""
 		
-		if epsilon is not None and delta is not None:
-			w = int(ceil(e/epsilon))
-			d = int(ceil(log(1./delta)))
 		self.w = w
 		self.d = d
 		self.count = zeros((self.d, self.w), dtype=int32)
@@ -47,7 +43,6 @@ class CountMinSketch(object):
 			if i < n and h < w:
 				h = self.fnv64(str(i) + a_string)
 		return hashes
-		
 		
 	def get_columns(self, a):
 		w = self.w
