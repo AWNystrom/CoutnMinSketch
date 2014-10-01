@@ -10,7 +10,7 @@ setup(
     url = "https://github.com/AWNystrom/CountMinSketch",
     keywords = ["count", "min", "sketch", "fast"],
     license = "Apache 2.0",
-    long_description=open('README.md').read(),
+    long_description=open('README.txt').read(),
     classifiers = ["Programming Language :: Python", 
     			   "Programming Language :: Python :: 2.7",
     			   "Programming Language :: Python :: 2",
