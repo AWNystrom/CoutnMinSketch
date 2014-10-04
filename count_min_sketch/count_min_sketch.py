@@ -23,29 +23,42 @@ class CountMinSketch(object):
 		self.count = zeros((self.d, self.w), dtype=int32)
 		self.rows = arange(self.d)
 		self.shift_by = int(ceil(log(w, 2)))
-	
-	def fnv64(self, a_string):
-		in_bytes = bytearray(a_string)
-		h = 0xcbf29ce484222325
-		for byte in in_bytes:
-			h *= 0x100000001b3
-			h &= 0xffffffffffffffff
-			h ^= byte
-		return h
 		
 	def get_columns(self, a):
 		a_string = str(a)
 		d = self.d
-		hashes = zeros(d, dtype=int16)
-		fnv64 = self.fnv64
-		h = fnv64(a_string)
 		w = self.w
 		shift_by = self.shift_by
+		hashes = zeros(d, dtype=int16)
+		
+		prime = 0x1000000000000000000000000000000000000000163L
+		offset = 0xdd268dbcaac550362d98c384c4e576ccc8b1536847b6bbb31023b4c8caee0535L
+		mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffL
+		
+		#Hash
+		in_bytes = bytearray(a_string)
+		h = offset
+		for byte in in_bytes:
+			h *= prime
+			h &= mod
+			h ^= byte
+		#/Hash
+		
+		times_hashed = 1
 		for i in xrange(d):
 			hashes[i] = h % w
 			h >>= shift_by
 			if h < w and i < d:
-				h = fnv64(str(i) + a_string)
+				#Hash
+				times_hashed += 1
+				in_bytes = bytearray(str(i) + a_string)
+				h = offset
+				for byte in in_bytes:
+					h *= prime
+					h &= mod
+					h ^= byte
+				#/Hash
+				
 		return hashes
 		
 	def update(self, a, val=1):
