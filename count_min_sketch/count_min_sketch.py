@@ -1,4 +1,4 @@
-from numpy import zeros, int32, arange, array
+from numpy import zeros, int32, int16, arange, array
 from math import log, e, ceil
 
 class CountMinSketch(object):
@@ -22,6 +22,7 @@ class CountMinSketch(object):
 		self.d = d
 		self.count = zeros((self.d, self.w), dtype=int32)
 		self.rows = arange(self.d)
+		self.shift_by = int(ceil(log(w, 2)))
 	
 	def fnv64(self, a_string):
 		in_bytes = bytearray(a_string)
@@ -31,24 +32,21 @@ class CountMinSketch(object):
 			h &= 0xffffffffffffffff
 			h ^= byte
 		return h
-	
-	def many_fnv64(self, a_string, n):
-		hashes = zeros(n, dtype=int32)
-		h = self.fnv64(a_string)
-		w = self.w
-		for i in xrange(n):
-			cur = h%w
-			h = (h - (cur)) / w
-			hashes[i] = cur
-			if i < n and h < w:
-				h = self.fnv64(str(i) + a_string)
-		return hashes
 		
 	def get_columns(self, a):
+		a_string = str(a)
+		d = self.d
+		hashes = zeros(d, dtype=int16)
+		fnv64 = self.fnv64
+		h = fnv64(a_string)
 		w = self.w
-		s = str(a)
-		f = self.fnv64
-		return self.many_fnv64(a, self.d)
+		shift_by = self.shift_by
+		for i in xrange(d):
+			hashes[i] = h % w
+			h >>= shift_by
+			if h < w and i < d:
+				h = fnv64(str(i) + a_string)
+		return hashes
 		
 	def update(self, a, val=1):
 		#h, in_cache = self.cache.lookup(a)
