@@ -2,21 +2,37 @@ from numpy import zeros, int32, int16, arange, array
 from math import log, e, ceil
 
 class CountMinSketch(object):
-	def __init__(self, w, d, bits):
+	def __init__(self, w=None, d=None, delta=None, epsilon=None, bits=256):
 		"""
 		CountMinSketch is an implementation of the count min sketch 
 		algorithm that probabilistically counts string frequencies.
+		
+		You must either supply w and d directly, or let them be calculated form error,
+		delta, and epsilon. If You choose the latter, then w = ceil(error/epsilon) and
+		d = ceil(ln(1.0/delta)) where the error in answering a query is within a factor 
+		of epsilon with probability delta.
 		
 		Parameters
 		----------
 		w : the number of columns in the count matrix
 		d : the number of rows in the count matrix
+		delta : (not applicable if w and d are supplied) the probability of query error
+		epsilon : (not applicable if w and d are supplied) the query error factor
 
 		bits : The size of the hash output space
+		
 		For the full paper on the algorithm, see the paper
 		"An improved data stream summary: the count-min sketch and its -
 		applications" by Cormode and Muthukrishnan, 2003.
 		"""
+		
+		if w is not None and d is not None:
+			self.w = w
+			self.d = d
+		elif delta is not None and epsilon is not None:
+			self.w = int(ceil(e/epsilon))
+			self.d = int(ceil(log(1./delta)))
+			print self.w, self.d
 		
 		if 2**bits < w:
 			raise Exception("Too few bits for w")
@@ -42,13 +58,12 @@ class CountMinSketch(object):
 			self.offset = 0x5f7a76758ecc4d32e56d5a591028b74b29fc4223fdada16c3bf34eda3674da9a21d9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004c6d7eb6e73802734510a555f256cc005ae556bde8cc9c6a93b21aff4b16c71ee90b3L
 		else:
 			raise Exception("Bits must be 32, 64, 128, 256, 512, or 1024")
+		self.L = self.w*(2**bits/self.w)
 		self.mod = 2**bits-1
 		self.bits = bits
-		self.w = w
-		self.d = d
 		self.count = zeros((self.d, self.w), dtype=int32)
 		self.rows = arange(self.d)
-		self.shift_by = int(ceil(log(w, 2)))
+		self.shift_by = int(ceil(log(self.w, 2)))
 		
 	def get_columns(self, a):
 		a_string = str(a)
