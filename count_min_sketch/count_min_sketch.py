@@ -33,6 +33,8 @@ class CountMinSketch(object):
 			self.w = int(ceil(e/epsilon))
 			self.d = int(ceil(log(1./delta)))
 			print self.w, self.d
+		else:
+			raise Exception("You must either supply both w and d or delta and epsilon.")
 		
 		if 2**bits < w:
 			raise Exception("Too few bits for w")
