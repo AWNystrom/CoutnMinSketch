@@ -37,7 +37,10 @@ class CountMinSketch(object):
 			raise Exception("You must either supply both w and d or delta and epsilon.")
 		
 		self.counts = [array('L', (0 for _ in xrange(self.w))) for _ in xrange(self.d)]
-		self.mask = array('L', (randint(0, 2147483647) for _ in xrange(self.d-1)))
+		upper_bound = 2147483647
+		step = upper_bound / (self.d-1)
+		ranges = [(i*step, step*(i+1)-1) for i in xrange(self.d-1)]
+		self.mask = array('L', (randint(low, high) for low, high in ranges))
 		
 	def get_columns(self, a):
 		h = hash(a)
