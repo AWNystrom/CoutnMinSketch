@@ -48,8 +48,8 @@ class CountMinSketch(object):
 		
 		yield h % w
 		for m in self.mask:
-			h ^= m
-			yield h % w
+			yield (h ^ m) % w
+			
 		
 	def update(self, a, val=1):
 		for row, col in izip(self.counts, self.get_columns(a)):
