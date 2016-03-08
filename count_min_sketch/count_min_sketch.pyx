@@ -1,10 +1,10 @@
 from __future__ import division
-from xxhash import xxh32
+from xxhash import xxh64
 import numpy as np
 cimport numpy as np
 
 DTYPE = np.int64
-ctypedef np.int_t DTYPE_t
+ctypedef np.int64_t DTYPE_t
 
 cdef class CountMinSketch:
     cdef np.ndarray rows, count
@@ -46,21 +46,26 @@ cdef class CountMinSketch:
         self.count = np.zeros((self.d, self.w), dtype=DTYPE)
         self.rows = np.arange(self.d)
         self.shift_by = <DTYPE_t>(np.ceil(np.log(self.w) / np.log(2)))
+        
+        self.mask np.ndarray np.randint(0, 2147483647)
 
-    def get_columns(self, bytes a):
-        cdef bytes a_string = str(a), cur_string
-        self.d
-        self.w
-        cdef np.ndarray[DTYPE_t, ndim=1] hashes = np.zeros(self.d, dtype=DTYPE)
+    def get_columns(self, string the_string):
+        cdef bytearray some_bytes = bytearray(the_string)
+        cdef DTYPE w = self.w
+        cdef np.ndarray[DTYPE_t, ndim=1] hashes = np.ndarray(shape=(self.d,), dtype=DTYPE, order='C')
+        cdef DTYPE_t h = xxh64(some_bytes).intdigest()
+        cdef DTYPE shift_by = self.shift_by
+        
+        cdef DTYPE i = 0, d = self.d
 
-        cdef DTYPE_t h = xxh32(a_string).intdigest()
-
-        for i in xrange(self.d):
-            hashes[i] = h % self.w
-            h >>= self.shift_by
-            if h < self.w and i < self.d:
-                cur_string = str(i) + a_string
-                h = xxh32(cur_string).intdigest()
+        while i < d:
+            some_bytes[0] ^ i
+            hashes[i] = h % w
+            h >>= shift_by
+            if h < w and i+1 < d:
+                some_bytes[0] ^ i
+                h = xxh32(some_bytes).intdigest()
+          i += 1
 
         return hashes
 
